@@ -7,7 +7,7 @@ class InfoWebSocketController: public drogon::WebSocketController<
         InfoWebSocketController, false> {
 public:
     WS_PATH_LIST_BEGIN
-    WS_PATH_ADD("/info", "drogon::LocalHostFilter", Get);
+    WS_PATH_ADD("/info", Get);
     WS_PATH_LIST_END
     virtual void handleNewMessage(const WebSocketConnectionPtr&, std::string&&,
             const WebSocketMessageType&) override;

@@ -156,9 +156,9 @@
     .gwd-div-1m88 {
       position: absolute;
       height: 100%;
-      width: 50%;
-      left: 50.1%;
       top: 0%;
+      width: 60%;
+      left: 40%;
     }
     .gwd-p-clf6 {
       color: rgb(189, 189, 189);
@@ -174,8 +174,8 @@
       position: absolute;
       left: 0%;
       top: 0%;
-      width: 50.1%;
       height: 100%;
+      width: 40%;
     }
     .gwd-div-uwqw {
       position: absolute;
@@ -212,6 +212,46 @@
       top: 10%;
       left: 10%;
     }
+    .gwd-p-n1x6 {
+      transform: translate3d(-60px, -29px, 0px);
+      text-align: center;
+    }
+    .gwd-image-17po {
+      top: 10%;
+    }
+    .gwd-div-153a {
+      width: 40%;
+    }
+    .gwd-div-1tt9 {
+      left: 40%;
+      width: 60%;
+    }
+    .gwd-p-7nkh {
+      transform: translate3d(-60px, -29px, 0px);
+      text-align: center;
+    }
+    .gwd-div-8sgo {
+      width: 40%;
+    }
+    .gwd-div-qwfe {
+      left: 40%;
+      width: 60%;
+    }
+    .gwd-p-1yhd {
+      transform: translate3d(-60px, -29px, 0px);
+      text-align: center;
+    }
+    .gwd-div-4i3c {
+      width: 40%;
+    }
+    .gwd-div-2gj4 {
+      left: 40%;
+      width: 60%;
+    }
+    .gwd-p-jvt5 {
+      transform: translate3d(-60px, -29px, 0px);
+      text-align: center;
+    }
   </style>
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,100italic,300,300italic,regular,italic,500,500italic,700,700italic,900,900italic" rel="stylesheet" type="text/css">
   <script data-source="googbase_min.js" data-version="4" data-exports-type="googbase" src="googbase_min.js"></script>
@@ -219,6 +259,9 @@
   <script data-source="gwdpage_min.js" data-version="13" data-exports-type="gwd-page" src="gwdpage_min.js"></script>
   <script data-source="gwdpagedeck_min.js" data-version="14" data-exports-type="gwd-pagedeck" src="gwdpagedeck_min.js"></script>
   <script data-source="gwdimage_min.js" data-version="15" data-exports-type="gwd-image" src="gwdimage_min.js"></script>
+  <!-- JQUERY -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 </head>
 
 <body class="document-body">
@@ -227,22 +270,22 @@
       <div class="gwd-page-content page1-content gwd-div-1tb5">
         <div class="gwd-div-e5qt">
           <div class="gwd-div-igl5">
-            <div class="gwd-div-5ivv">
-              <p class="gwd-p-clf6" id="status-text">30º</p>
+            <div class="gwd-div-5ivv gwd-div-2gj4">
+              <p class="gwd-p-clf6 gwd-p-jvt5" id="status-text">30.0º</p>
             </div>
-            <div class="gwd-div-bisw">
+            <div class="gwd-div-bisw gwd-div-4i3c">
               <gwd-image class="gwd-image-1nu8" id="temp-status-image" source="assets/green.png" scaling="contain"></gwd-image>
             </div>
           </div>
           <div class="gwd-div-uwqw">
-            <h2 class="gwd-p-1l5k text-tool-feedback" id="status-tittle">Estado<br></h2></div>
+            <h2 class="gwd-p-1l5k" id="status-tittle">Estado<br></h2></div>
         </div>
         <div class="gwd-div-1f67">
           <div class="gwd-div-igl5">
-            <div class="gwd-div-5ivv">
-              <p class="gwd-p-clf6" id="temp-cald-text">30º</p>
+            <div class="gwd-div-5ivv gwd-div-qwfe">
+              <p class="gwd-p-clf6 gwd-p-1yhd" id="temp-cald-text">30.0º</p>
             </div>
-            <div class="gwd-div-bisw">
+            <div class="gwd-div-bisw gwd-div-8sgo">
               <gwd-image class="gwd-image-1nu8" id="temp-cald-image" source="assets/cald.svg" scaling="contain"></gwd-image>
             </div>
           </div>
@@ -251,10 +294,10 @@
         </div>
         <div class="gwd-div-sedl">
           <div class="gwd-div-igl5">
-            <div class="gwd-div-5ivv">
-              <p class="gwd-p-clf6" id="temp-int-text">30º</p>
+            <div class="gwd-div-5ivv gwd-div-1tt9">
+              <p class="gwd-p-clf6 gwd-p-7nkh" id="temp-int-text">30.0º</p>
             </div>
-            <div class="gwd-div-bisw">
+            <div class="gwd-div-bisw gwd-div-153a">
               <gwd-image class="gwd-image-1nu8" id="temp-int-image" source="assets/house.svg" scaling="contain"></gwd-image>
             </div>
           </div>
@@ -264,10 +307,10 @@
         <div class="gwd-div-11bi">
           <div class="gwd-div-jw3x">
             <div class="gwd-div-1m88">
-              <p class="gwd-p-clf6" id="temp-ext-text">30º</p>
+              <p class="gwd-p-clf6 gwd-p-n1x6 text-tool-feedback" id="temp-ext-text">30.0º</p>
             </div>
             <div class="gwd-div-4y1e">
-              <gwd-image class="gwd-image-1nu8" id="temp-ext-image" source="assets/sun.svg" scaling="contain"></gwd-image>
+              <gwd-image class="gwd-image-1nu8 gwd-image-17po" id="temp-ext-image" source="assets/sun.svg" scaling="contain"></gwd-image>
             </div>
           </div>
           <div class="gwd-div-10v4">
@@ -277,6 +320,68 @@
     </gwd-page>
   </gwd-pagedeck>
   <script type="text/javascript" id="gwd-init-code">
+
+    
+      function connectionKO() {
+        console.log("connectionKO")
+        $("#status-tittle").html("Estado KO ws");
+      }
+    
+      function connectionOK() {
+        console.log("connectionOK")
+      }
+
+      function newLiveData(event) {
+        var msg = JSON.parse(event.data);
+        if (msg != undefined) {
+          console.log(msg)
+          if (msg["status"] === true) {
+            $("#status-tittle").html("Estado");
+            $("#temp-int-text").html(msg["int"]["temp"].toFixed(1) + "º")
+            $("#temp-cald-text").html(msg["cald"]["temp"].toFixed(1) + "º")
+            $("#temp-ext-text").html(msg["ext"]["temp"].toFixed(1) + "º")
+            $("#status-text").html(msg["limitTemp"].toFixed(1) + "º")
+            if (msg["active"] === true) {
+              $("#temp-status-image").attr("source","assets/green.png");
+            } else {
+              $("#temp-status-image").attr("source","assets/red.png");
+            }
+            $("#temp-ext-image").attr("source",msg["ext"]["img"])
+          } else {
+            $("#status-tittle").html("Estado KO sts");
+            $("#temp-int-text").html("--º")
+            $("#temp-cald-text").html("--º")
+            $("#temp-ext-text").html("--º")
+            $("#status-text").html("--º")
+            $("#temp-status-image").attr("source","assets/red.png");
+            $("#temp-ext-image").attr("source","assets/sun.svg")
+          }
+        }
+      }
+
+      function WebSocketInit() {
+        if ("WebSocket" in window) {
+          var ws = new WebSocket('ws://' + window.location.host + '/info');
+    
+          ws.onmessage = function (evt) {
+            connectionOK();
+            newLiveData(evt);
+          };
+    
+          ws.onclose = function () {
+            connectionKO()
+            setTimeout(function () { WebSocketInit() }, 5000);
+          };
+    
+          ws.onopen = function () {
+            connectionOK();
+          };
+        }
+        else {
+          alert("WebSocket NOT supported by your Browser!");
+        }
+      }
+          
     (function() {
       document.body.style.opacity = "0";
       var pageDeck = document.getElementById('pagedeck');
@@ -302,6 +407,7 @@
         handleDomContentLoaded, false);
       window.addEventListener('WebComponentsReady',
         handleWebComponentsReady, false);
+      WebSocketInit();
     })();
   </script>
 </body>

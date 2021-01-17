@@ -21,6 +21,14 @@ foreach(cspFile ${SCP_LIST})
     set(VIEWSRC ${VIEWSRC} ${classname}.cc)
 endforeach()
 
-file(GLOB SOURCES "*.cc" "filters/*.cc" "mail/*.cc")
+execute_process(COMMAND "drogon_ctl" 
+                        "create" 
+                        "model" 
+                        "-f" 
+                        "." 
+                WORKING_DIRECTORY ${homehub_SOURCE_DIR}/src/model/
+                RESULT_VARIABLE rv)
+
+file(GLOB SOURCES "*.cc" "filters/*.cc" "mail/*.cc" "model/*.cc")
 add_executable(homehub ${SOURCES} ${VIEWSRC})
 target_link_libraries(homehub spdlog drogon curl)

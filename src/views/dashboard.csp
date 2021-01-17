@@ -1,0 +1,282 @@
+<%c++
+    auto message=@@.get<std::string>("message");
+    auto measurementsJson=@@.get<std::string>("measurementsJson");
+%>
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>HomeHub</title>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- JQUERY -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <!-- BOOTSTRAP -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <!-- CHART -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
+  <!-- CLOCKPICKER -->
+  <link rel="stylesheet" href="http://weareoutman.github.io/clockpicker/dist/bootstrap-clockpicker.min.css">
+  <script src="http://weareoutman.github.io/clockpicker/dist/bootstrap-clockpicker.min.js"></script>
+  <!--MYSCRIPTS-->
+  <link href="/main/css/index.css" rel="stylesheet">
+  <script src="/main/js/index.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand" href="/dashboard" >Homekit</a>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="/dashboard">Panel <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/rules">Reglas</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div id="content">
+	<%c++ if(!message.empty()){%>
+ 		<div class="alert alert-primary" role="alert">{%message%}</div>
+  	<%c++ }%>
+    
+    <div class="my-container">
+      <div id="error-connection" class="container container-body" hidden>
+        <div class="my_jumbo jumbotron jumbotron-fluid">
+          <h3>
+            <center style="color: red;">Conexión con servidor perdida</center>
+          </h3>
+        </div>
+      </div>
+      <div id="error-system" class="container container-body" hidden>
+        <div class="my_jumbo jumbotron jumbotron-fluid">
+          <h3>
+            <center style="color: red;">Error en el sistema</center>
+          </h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card-deck">
+          <div class="card text-white bg-primary">
+            <div class="card-header">Temperatura Actual Salón</div>
+            <div class="card-body">
+              <h5 class="card-title" id="curr-temp-salon"></h5>
+              <p class="card-text"></p>
+            </div>
+          </div>
+          <div class="card text-white bg-primary">
+            <div class="card-header">Temperatura Actual Caldera</div>
+            <div class="card-body">
+              <h5 class="card-title" id="curr-temp-caldera"></h5>
+              <p class="card-text"></p>
+            </div>
+          </div>
+          <div class="card text-white bg-primary">
+            <div class="card-header">Temperatura Actual Exterior</div>
+            <div class="card-body">
+              <h5 class="card-title" id="curr-temp-exterior"></h5>
+              <p class="card-text"></p>
+            </div>
+          </div>
+          <div id="card-status" class="card text-white bg-primary">
+            <div class="card-header">Estado Calefación</div>
+            <div class="card-body">
+              <h5 class="card-title" id="card-status-tittle"></h5>
+              <p class="card-text" id="card-status-text"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="jumbotron jumbotron-fluid" id="chart" style="width:60%;margin: auto;">
+          <canvas id="canvas"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+
+      function RenderChart() {
+        var meassurements = {%measurementsJson%};
+        for (let index = 0; index < meassurements.length; index++) {
+          const meassurement = meassurements[index];
+          var date = (new Date(meassurement["date"] * 1000)).toLocaleString()
+          config.data.labels.push(date);
+  
+          config.data.datasets[0].data.push(meassurement["tempExterior"].toFixed(2))
+          config.data.datasets[1].data.push(meassurement["tempCald"].toFixed(2))
+          config.data.datasets[2].data.push(meassurement["tempInterior"].toFixed(2))
+          if (meassurement["active"]) {
+            config.data.datasets[3].data.push(meassurement["tempInterior"].toFixed(2))
+          } else {
+            config.data.datasets[3].data.push(0)
+  
+          }
+          window.myLine.update();
+        }
+      }
+    
+      var config = {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Temperaturas exterior',
+            backgroundColor: window.chartColors.green,
+            borderColor: window.chartColors.green,
+            data: [],
+            fill: false,
+          },{
+            label: 'Temperaturas caldera',
+            backgroundColor: window.chartColors.orange,
+            borderColor: window.chartColors.orange,
+            data: [],
+            fill: false,
+          }, {
+            label: 'Temperaturas salón',
+            backgroundColor: window.chartColors.blue,
+            borderColor: window.chartColors.blue,
+            data: [],
+            fill: false,
+          }, {
+            label: 'Calefación encendida',
+            backgroundColor: window.chartColors.red,
+            borderColor: window.chartColors.red,
+            data: [],
+            fill: "origin",
+          }]
+        },
+        options: {
+          legend: {
+            display: false
+          },
+          responsive: true,
+          title: {
+            display: false,
+            text: 'Temperaturtas registradas'
+          },
+          tooltips: {
+            mode: 'index',
+            intersect: false,
+          },
+          hover: {
+            mode: 'nearest',
+            intersect: true
+          },
+          scales: {
+            xAxes: [{
+              display: false,
+              scaleLabel: {
+                display: true,
+                labelString: 'Hora'
+              }
+            }],
+            yAxes: [{
+              display: true,
+              scaleLabel: {
+                display: true,
+                labelString: 'Grados'
+              }
+            }]
+          }
+        }
+      };
+    
+      $("document").ready( function () {
+        var ctx = document.getElementById('canvas').getContext('2d')
+        window.myLine = new Chart(ctx, config)
+        WebSocketInit()
+        RenderChart()
+      })
+    
+      function connectionKO() {
+        $("#error-connection").show();
+      }
+    
+      function connectionOK() {
+        $("#error-connection").hide();
+      }
+    
+      function systemKO() {
+        $("#error-system").show();
+      }
+    
+      function systemOK() {
+        $("#error-system").hide();
+      }
+    
+      function systemON(limitTemp, manual) {
+        $("#card-status").find(".bg-secondary").addClass("bg-success").removeClass("bg-secondary");
+        $("#card-status-tittle").html("Calefacción encendida")
+        if (manual) {
+          $("#card-status-text").html("Calefacción encendida manualmente, configurado a " + limitTemp)
+        } else {
+          $("#card-status-text").html("Calefacción encendida automáticamente, configurado a " + limitTemp)
+        }
+      }
+    
+      function systemOFF(limitTemp) {
+        $("#card-status").find(".bg-success").addClass("bg-secondary").removeClass("bg-success");
+        $("#card-status-tittle").html("Calefacción apagada")
+        $("#card-status-text").html("configurado a " + limitTemp)
+      }
+    
+      function newLiveData(event) {
+        var msg = JSON.parse(event.data);
+        if (msg != undefined) {
+          console.log(msg)
+          if (msg["status"]) {
+            systemOK()
+          } else {
+            systemKO()
+          }
+          if (msg["active"]) {
+            systemON(msg["limitTemp"].toFixed(2) + " ºC", msg["manual"])
+          } else {
+            systemOFF(msg["limitTemp"].toFixed(2) + " ºC")
+          }
+          $("#curr-temp-salon").html(msg["int"]["temp"].toFixed(2) + " ºC")
+          $("#curr-temp-caldera").html(msg["cald"]["temp"].toFixed(2) + " ºC")
+          $("#curr-temp-exterior").html(msg["ext"]["temp"].toFixed(2) + " ºC")
+        }
+      }
+    
+      function WebSocketInit() {
+        if ("WebSocket" in window) {
+          var ws = new WebSocket('ws://' + window.location.host + '/info');
+    
+          ws.onmessage = function (evt) {
+            connectionOK();
+            newLiveData(evt);
+          };
+    
+          ws.onclose = function () {
+            connectionKO()
+            setTimeout(function () { WebSocketInit() }, 5000);
+          };
+    
+          ws.onopen = function () {
+            connectionOK();
+          };
+        }
+        else {
+          alert("WebSocket NOT supported by your Browser!");
+        }
+      }
+    </script>
+
+  </div>
+</body>
+
+</html>
+  	

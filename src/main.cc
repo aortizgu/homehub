@@ -13,12 +13,15 @@ using namespace drogon;
 
 void initLog(const std::string &appname) {
     auto console_sink = std::make_shared<sinks::stdout_color_sink_mt>();
-    auto file_sink = std::make_shared < sinks::basic_file_sink_mt
-            > ("/tmp/homehub.log", false);
+//    auto file_sink = std::make_shared < sinks::basic_file_sink_mt
+//            > ("/tmp/homehub.log", false);
+//    auto l = std::make_shared < logger > (appname, sinks_init_list {
+//            console_sink, file_sink });
+//    set_default_logger(l);
+//    spdlog::flush_every(std::chrono::seconds(3));
     auto l = std::make_shared < logger > (appname, sinks_init_list {
-            console_sink, file_sink });
+            console_sink});
     set_default_logger(l);
-    spdlog::flush_every(std::chrono::seconds(3));
     spdlog::set_level(spdlog::level::trace);
 }
 
@@ -92,14 +95,16 @@ int main(int argc, char *argv[]) {
     auto infoController = std::make_shared<InfoWebSocketController>();
     app().registerController<InfoWebSocketController>(infoController);
 
-    spdlog::info("Version: {0}, Date: {1}",
-            HOMEHUB_VERSION,
-            std::string { drogon::utils::getHttpFullDate(trantor::Date::now()) });
-    printHandlers();
-
     auto controller = std::make_shared<Controller>();
     controller->setOnPublishInfo(std::bind(&InfoWebSocketController::publish, infoController, std::placeholders::_1));
-    double period = 10.0;
-    app().getLoop()->runInLoop(std::bind(&Controller::checkStatus, controller));
+    app().registerController<Controller>(controller);
+
+    spdlog::info("Version: {0}, Date: {1}, Period: {2}",
+            HOMEHUB_VERSION,
+            std::string { drogon::utils::getHttpFullDate(trantor::Date::now()) },
+            app().getCustomConfig()["controller"]["period"].asDouble());
+    printHandlers();
+    app().getLoop()->runAfter(1.0, std::bind(&Controller::checkStatus, controller));
+//    app().getLoop()->runEvery(app().getCustomConfig()["controller"]["period"].asDouble(), std::bind(&Controller::checkStatus, controller));
     app().run();
 }

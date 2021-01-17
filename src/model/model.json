@@ -1,0 +1,8 @@
+{
+    "rdbms": "sqlite3",
+    "filename":"model.db",
+    "dbname": "model.db",
+    "is_fast": true,
+    "connection_number": 1,
+    "tables": []
+}

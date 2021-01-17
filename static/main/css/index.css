@@ -1,0 +1,50 @@
+body{
+    background-color: #212529dc;
+}
+
+.my-container {
+    width: auto;
+    padding: 25px;
+}
+
+.chart-container {
+  position: relative;
+  margin: auto;
+  height: 50vh;
+  width: 80vw;
+}
+
+.tinny-input {
+  max-width: 75px;
+}
+.clockpicker {
+    max-width: 160px;
+    margin-top: 0em;
+    padding: 0em;
+}
+
+.clockpicker input,
+.clockpicker span {
+    border-color: #999;
+}
+
+tr.disabled {
+    background-color: grey;
+}
+
+canvas{
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+#chart{
+    width:60%;
+    margin: auto;
+}
+
+.card-deck {
+    margin: 0 auto; /* Added */
+    float: none; /* Added */
+    margin-bottom: 10px; /* Added */
+}
