@@ -164,12 +164,11 @@ void Controller::checkStatus() {
                     spdlog::info("Controller::checkStatus: active {} -> {}", activeNow, mustActivate);
                     activeNow = mustActivate;
                     std::ostringstream ss;
-                    ss << std::setprecision(2);
                     if (activeNow) {
-                        ss << "Se ha encendido la calefación. Temperatura actual " << sensorTemp << " ºC, configurado a " << limitTemp << " ºC.";
+                        ss << "Se ha encendido la calefación. Temperatura actual " << std::fixed << std::setprecision(1) << sensorTemp << " ºC, configurado a " << std::fixed << std::setprecision(1) << limitTemp << " ºC.";
                         notify("Calefacción Encendida", ss.str());
                     } else {
-                        ss << "Se ha apagado la calefación. Temperatura actual " << sensorTemp << " ºC, configurado a " << limitTemp << " ºC.";
+                        ss << "Se ha apagado la calefación. Temperatura actual " << std::fixed << std::setprecision(1) << sensorTemp << " ºC, configurado a " << std::fixed << std::setprecision(1) << limitTemp << " ºC.";
                         notify("Calefacción Apagada", ss.str());
                     }
                 }
