@@ -11,17 +11,20 @@
 using namespace spdlog;
 using namespace drogon;
 
-void initLog(const std::string &appname) {
+void initLog(const std::string &appname, bool file) {
     auto console_sink = std::make_shared<sinks::stdout_color_sink_mt>();
-//    auto file_sink = std::make_shared < sinks::basic_file_sink_mt
-//            > ("/tmp/homehub.log", false);
-//    auto l = std::make_shared < logger > (appname, sinks_init_list {
-//            console_sink, file_sink });
-//    set_default_logger(l);
-//    spdlog::flush_every(std::chrono::seconds(3));
-    auto l = std::make_shared < logger > (appname, sinks_init_list {
-            console_sink});
-    set_default_logger(l);
+    if (file) {
+        auto file_sink = std::make_shared < sinks::basic_file_sink_mt
+                > ("/tmp/homehub.log", false);
+        auto l = std::make_shared < logger > (appname, sinks_init_list {
+                console_sink, file_sink });
+        set_default_logger(l);
+        spdlog::flush_every(std::chrono::seconds(3));
+    } else {
+        auto l = std::make_shared < logger > (appname, sinks_init_list {
+                console_sink});
+        set_default_logger(l);
+    }
     spdlog::set_level(spdlog::level::trace);
 }
 
@@ -64,7 +67,7 @@ void printHandlers() {
 }
 
 int main(int argc, char *argv[]) {
-    initLog(argv[0]);
+    initLog(argv[0], false);
     std::map < std::string, std::string > config_credentials;
     std::string realm("drogonRealm");
     std::string opaque("drogonOpaque");
@@ -105,6 +108,5 @@ int main(int argc, char *argv[]) {
             app().getCustomConfig()["controller"]["period"].asDouble());
     printHandlers();
     app().getLoop()->runAfter(1.0, std::bind(&Controller::checkStatus, controller));
-//    app().getLoop()->runEvery(app().getCustomConfig()["controller"]["period"].asDouble(), std::bind(&Controller::checkStatus, controller));
     app().run();
 }

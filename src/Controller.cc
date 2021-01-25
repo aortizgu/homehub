@@ -37,6 +37,7 @@ void trim(std::string &s) {
 }
 
 void Controller::dashboard(const HttpRequestPtr& req,std::function<void (const HttpResponsePtr &)> &&callback) const {
+    spdlog::info("Controller::dashboard");
     auto resp = HttpResponse::newHttpViewResponse("dashboard.csp");
     try {
         Mapper<Measurement> mp(app().getDbClient());
@@ -57,6 +58,7 @@ void Controller::dashboard(const HttpRequestPtr& req,std::function<void (const H
 }
 
 void Controller::rules(const HttpRequestPtr& req,std::function<void (const HttpResponsePtr &)> &&callback) const {
+    spdlog::info("Controller::rules");
     auto resp = HttpResponse::newHttpViewResponse("rules.csp");
     try {
         Mapper<Config> mp(app().getDbClient());
@@ -67,7 +69,6 @@ void Controller::rules(const HttpRequestPtr& req,std::function<void (const HttpR
             data.insert("message", req->getCookie("message"));
         }
         resp = HttpResponse::newHttpViewResponse("rules.csp", data);
-        spdlog::info("Controller::rules: config updated");
     } catch (...) {
         resp->setStatusCode(HttpStatusCode::k400BadRequest);
     }
@@ -86,6 +87,7 @@ void Controller::config(const HttpRequestPtr& req,std::function<void (const Http
         Mapper<Config> mp(app().getDbClient());
         mp.update(config);
         resp->addCookie("message", "Configuración modificada");
+        spdlog::info("Controller::config: config updated");
         app().getLoop()->queueInLoop(std::bind(&Controller::checkStatus, this));
     } catch (...) {
         resp->setStatusCode(HttpStatusCode::k400BadRequest);
@@ -98,18 +100,24 @@ void Controller::setOnPublishInfo(const std::function<void(const std::string&)> 
 }
 
 void Controller::checkStatus() {
-    spdlog::debug("Controller::checkStatus: stop timer {}", timerId);
+    if (first) {
+        notify("Inicio de aplicación", "(·_·)");
+        first = false;
+    }
+    spdlog::info("Controller::checkStatus: stop timer {}", timerId);
     app().getLoop()->invalidateTimer(timerId);
     /*
      * 1-getExternalTemp
      * 2-getSensorTemp
      * 3-setPeripheralState
      * 4-getPeripheralTemp
-     * 4-publishInfo
+     * 5-storeInfo
+     * 6-publishInfo
      */
     exteriorTempProvider.getExteriorTemp([this](bool error, double temp, const std::string &img) {
         spdlog::debug("Controller::getExteriorTemp: error {0}, temp {1}, img {2}", error, temp, img);
         if (externalTempError != error) {
+            spdlog::error("Controller::checkStatus::getExteriorTemp: error {} -> {}", externalTempError, error);
             if (error) {
                 notify("Servicio de temperatura exterior",
                         "Se ha producido un error tratando de obtener la información acerca de la temperatura exterior");
@@ -127,6 +135,7 @@ void Controller::checkStatus() {
         getSensorTemp([this](bool error, double temp) {
             spdlog::debug("Controller::getSensorTemp: error {0}, temp {1}", error, temp);
             if (sensorTempError != error) {
+                spdlog::error("Controller::checkStatus::getSensorTemp: error {} -> {}", sensorTempError, error);
                 if (error) {
                     notify("Sensor de temperatura",
                             "Se ha producido un error tratando de obtener la información acerca del sensor de temperatura");
@@ -152,11 +161,16 @@ void Controller::checkStatus() {
                 spdlog::debug("Controller::getSensorTemp: sensorTemp {0}, limitTemp {1}, hysteresis {2}, mustActivate {3}, activeNow {4}", sensorTemp, limitTemp, hysteresis, mustActivate, activeNow);
 
                 if (activeNow != mustActivate) {
+                    spdlog::info("Controller::checkStatus: active {} -> {}", activeNow, mustActivate);
                     activeNow = mustActivate;
+                    std::ostringstream ss;
+                    ss << std::setprecision(2);
                     if (activeNow) {
-                        notify("Calefacción Encendida", "");
+                        ss << "Se ha encendido la calefación. Temperatura actual " << sensorTemp << " ºC, configurado a " << limitTemp << " ºC.";
+                        notify("Calefacción Encendida", ss.str());
                     } else {
-                        notify("Calefacción Apagada", "");
+                        ss << "Se ha apagado la calefación. Temperatura actual " << sensorTemp << " ºC, configurado a " << limitTemp << " ºC.";
+                        notify("Calefacción Apagada", ss.str());
                     }
                 }
             } else {
@@ -166,6 +180,7 @@ void Controller::checkStatus() {
             PeripheralDevice::setState(activeNow, [this](bool error){
                 spdlog::debug("Controller::setState: error {0}", error);
                 if (peripheralError != error) {
+                    spdlog::error("Controller::checkStatus::setState: error {} -> {}", peripheralError, error);
                     if (error) {
                         notify("Dispositivo Periférico",
                                 "Se ha producido un error tratando de obtener la información acerca del Dispositivo Periférico");
@@ -179,6 +194,7 @@ void Controller::checkStatus() {
                 PeripheralDevice::getTemp([this](bool error, double temp){
                     spdlog::debug("Controller::getTemp: error {0}, temp {1}", error, temp);
                     if (peripheralError != error) {
+                        spdlog::error("Controller::checkStatus::getTemp: error {} -> {}", peripheralError, error);
                         if (error) {
                             notify("Dispositivo Periférico",
                                     "Se ha producido un error tratando de obtener la información acerca del Dispositivo Periférico");
@@ -197,7 +213,7 @@ void Controller::checkStatus() {
                     publishInfo();
 
                     timerId = app().getLoop()->runAfter(app().getCustomConfig()["controller"]["period"].asDouble(), std::bind(&Controller::checkStatus, this));
-                    spdlog::debug("Controller::checkStatus: period {}, stting timerId {}", app().getCustomConfig()["controller"]["period"].asDouble(), timerId);
+                    spdlog::debug("Controller::checkStatus: period {}, setting timerId {}", app().getCustomConfig()["controller"]["period"].asDouble(), timerId);
                 });
             });
         });
@@ -265,9 +281,8 @@ void Controller::storeInfo() const {
                 app().getDbClient()->execSqlSync(
                         "DELETE FROM measurement WHERE ROWID IN (SELECT ROWID FROM measurement ORDER BY ROWID DESC LIMIT -1 OFFSET $1)",
                         24 * 60 * 60 / app().getCustomConfig()["controller"]["period"].asInt());
-        spdlog::debug("Controller::storeInfo: {0} rows affected ", result.affectedRows());
     } catch (const DrogonDbException &e) {
-        spdlog::debug("Controller::storeInfo: db error {0}", e.base().what());
+        spdlog::error("Controller::storeInfo: db error {0}", e.base().what());
     }
 }
 

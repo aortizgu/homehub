@@ -26,6 +26,7 @@ void InfoWebSocketController::handleNewConnection(const HttpRequestPtr &req,
                 conn->send(message);
             });
     conn->setContext(std::make_shared < drogon::SubscriberID > (std::move(id)));
+    conn->setPingMessage("ping", std::chrono::seconds(30));
 }
 
 void InfoWebSocketController::publish(const std::string &msg) {

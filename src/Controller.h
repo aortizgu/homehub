@@ -36,4 +36,5 @@ private:
     std::string externalTempImg;
     trantor::TimerId timerId = 0;
     std::function<void(const std::string&)> onPublishInfo = nullptr;
+    bool first = true;
 };

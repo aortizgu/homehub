@@ -6,8 +6,6 @@ using namespace drogon;
 
 void PeripheralDevice::getTemp(std::function<void(bool error, double temp)> cb) {
     spdlog::debug("PeripheralDevice::getTemp");
-    cb(false, 13.0);
-    return;
     auto client = HttpClient::newHttpClient("http://caldera.local");
     auto req = HttpRequest::newHttpRequest();
     req->setMethod(drogon::Get);
@@ -44,14 +42,13 @@ void PeripheralDevice::getUpTime(std::function<void(bool error, const std::strin
 
 void PeripheralDevice::setState(bool on, std::function<void(bool error)> cb) {
     spdlog::debug("PeripheralDevice::setState: on:{}", on);
-    cb(false);
-//    auto client = HttpClient::newHttpClient("http://caldera.local");
-//    auto req = HttpRequest::newHttpRequest();
-//    req->setMethod(drogon::Get);
-//    req->setPath("/relay");
-//    req->setParameter("state", on ? "on" : "off");
-//    client->sendRequest(req,
-//            [cb](ReqResult result, const HttpResponsePtr &response) {
-//                cb(result != ReqResult::Ok);
-//            });
+    auto client = HttpClient::newHttpClient("http://caldera.local");
+    auto req = HttpRequest::newHttpRequest();
+    req->setMethod(drogon::Get);
+    req->setPath("/relay");
+    req->setParameter("state", on ? "on" : "off");
+    client->sendRequest(req,
+            [cb](ReqResult result, const HttpResponsePtr &response) {
+                cb(result != ReqResult::Ok);
+            });
 }

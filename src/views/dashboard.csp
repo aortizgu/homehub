@@ -10,7 +10,10 @@
 <head>
   <title>HomeHub</title>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="manifest" href="site.webmanifest">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- JQUERY -->
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -98,7 +101,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="jumbotron jumbotron-fluid" id="chart" style="width:60%;margin: auto;">
+        <div class="jumbotron jumbotron-fluid" id="chart" style="width:90%;margin: auto;">
           <canvas id="canvas"></canvas>
         </div>
       </div>
@@ -113,11 +116,11 @@
           var date = (new Date(meassurement["date"] * 1000)).toLocaleString()
           config.data.labels.push(date);
   
-          config.data.datasets[0].data.push(meassurement["tempExterior"].toFixed(2))
-          config.data.datasets[1].data.push(meassurement["tempCald"].toFixed(2))
-          config.data.datasets[2].data.push(meassurement["tempInterior"].toFixed(2))
+          config.data.datasets[0].data.push(meassurement["tempExterior"].toFixed(1))
+          config.data.datasets[1].data.push(meassurement["tempCald"].toFixed(1))
+          config.data.datasets[2].data.push(meassurement["tempInterior"].toFixed(1))
           if (meassurement["active"]) {
-            config.data.datasets[3].data.push(meassurement["tempInterior"].toFixed(2))
+            config.data.datasets[3].data.push(meassurement["tempInterior"].toFixed(1))
           } else {
             config.data.datasets[3].data.push(0)
   
@@ -219,7 +222,7 @@
         $("#card-status").find(".bg-secondary").addClass("bg-success").removeClass("bg-secondary");
         $("#card-status-tittle").html("Calefacción encendida")
         if (manual) {
-          $("#card-status-text").html("Calefacción encendida manualmente, configurado a " + limitTemp)
+          $("#card-status-text").html("Calefacción encendida, configurado a " + limitTemp)
         } else {
           $("#card-status-text").html("Calefacción encendida automáticamente, configurado a " + limitTemp)
         }
@@ -241,13 +244,13 @@
             systemKO()
           }
           if (msg["active"]) {
-            systemON(msg["limitTemp"].toFixed(2) + " ºC", msg["manual"])
+            systemON(msg["limitTemp"].toFixed(1) + " ºC", msg["manual"])
           } else {
-            systemOFF(msg["limitTemp"].toFixed(2) + " ºC")
+            systemOFF(msg["limitTemp"].toFixed(1) + " ºC")
           }
-          $("#curr-temp-salon").html(msg["int"]["temp"].toFixed(2) + " ºC")
-          $("#curr-temp-caldera").html(msg["cald"]["temp"].toFixed(2) + " ºC")
-          $("#curr-temp-exterior").html(msg["ext"]["temp"].toFixed(2) + " ºC")
+          $("#curr-temp-salon").html(msg["int"]["temp"].toFixed(1) + " ºC")
+          $("#curr-temp-caldera").html(msg["cald"]["temp"].toFixed(1) + " ºC")
+          $("#curr-temp-exterior").html(msg["ext"]["temp"].toFixed(1) + " ºC")
         }
       }
     
